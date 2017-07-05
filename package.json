@@ -1,0 +1,22 @@
+{
+  "name": "update-multiple-document-mongoose-node-cron",
+  "version": "1.0.0",
+  "description": "Scheduled update multiple document using mongoose and node-cron",
+  "main": "server.js",
+  "scripts": {
+    "test": "server.js",
+    "dev": "nodemon server.js"
+  },
+  "author": "Sherwin Dapito",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.17.2",
+    "express": "^4.15.3",
+    "mongoose": "^4.10.8",
+    "morgan": "^1.8.2",
+    "node-cron": "^1.2.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.11.0"
+  }
+}
