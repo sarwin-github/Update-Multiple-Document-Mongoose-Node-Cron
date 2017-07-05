@@ -10,21 +10,6 @@ module.exports.createProducts = (req, res) => {
 	productArray.map(item => createProduct(item));
 };
 
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-// Create product function
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-let createProduct = (name) => {
-	product = new Product();
-
-	product.name = name;
-	product.status = 'Active';
-	product.description = `Sample description for product: ${name}`;
-
-	product.save((err, products) => {
-		if(err) throw err;
-		console.log('Successfully added new product.');
-	});
-};
 
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 // Get list of products
@@ -44,7 +29,7 @@ module.exports.getProducts = (req, res) => {
 		res.status(200).json({
 			success:true, 
 				message:'Successfully fetched a list of products', 
-					products: products })
+					products: products });
 	});	
 };
 
@@ -68,7 +53,7 @@ module.exports.getProductLessDate = (req, res) => {
 			success:true, 
 				message:'Successfully fetched a list of products', 
 					currentDate: currentDate,
-						products: products })
+						products: products });
 	});	
 };
 
@@ -82,6 +67,25 @@ module.exports.updateProductSchedule = (req, res) => {
 	});
 };
 
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// Create product function
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+let createProduct = (name) => {
+	product = new Product();
+
+	product.name = name;
+	product.status = 'Active';
+	product.description = `Sample description for product: ${name}`;
+
+	product.save((err, products) => {
+		if(err) throw err;
+		console.log('Successfully added new product.');
+	});
+};
+
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// Update product function
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 let updateProduct = (name) => {
 	let randomNumber = Math.floor(Math.random() * (999 - 1 + 1));
 	let query = Product.findOne({name: name}).select({ 'name': 1 });
