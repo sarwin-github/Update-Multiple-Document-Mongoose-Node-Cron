@@ -6,10 +6,9 @@ const cron 		= require('node-cron');
 // Create/insert multiple products to database
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 module.exports.createProducts = (req, res) => {
-	let productArray = ['Bacon', 'Apple', 'Fork', 'Beans'];
+	let productArray = ['Coke', 'Spoon', 'Cake', 'Coffee'];
 	productArray.map(item => createProduct(item));
 };
-
 
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 // Get list of products
@@ -37,8 +36,8 @@ module.exports.getProducts = (req, res) => {
 // Get list of products thats less than the current date
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 module.exports.getProductLessDate = (req, res) => {
-	let currentDate = new Date();
-	let query = Product.find({ dateCreated: {$lt: currentDate}}).select({ 'status':0, '__v': 0 });
+	let currentDate = new Date('2017-07-05T06:47:20.725Z');
+	let query = Product.find({ dateCreated: {$lt: currentDate}}).select({ '__v': 0 });
 	query.exec((err, products) => {
 		if(err) return res.status(500).json({
 			success:false, 
@@ -61,18 +60,38 @@ module.exports.getProductLessDate = (req, res) => {
 // Update product description every 10 seconds
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 module.exports.updateProductSchedule = (req, res) => {
+	let currentDate = new Date('2017-07-05T06:47:20.725Z');
 	cron.schedule('*/10 * * * * *', function(){
-		let productArray = ['Bacon', 'Apple', 'Fork', 'Beans'];
-		productArray.map(product => updateProduct(product));
+		updateProduct(currentDate, (err, product) => {
+			if(err) throw err;
+			console.log(`\nSuccessfully updated products created before ${currentDate}`);
+		});
 	});
 };
+
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// Update product function
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+let updateProduct = (currentDate, callback) => {
+	let randomNumber = Math.floor(Math.random() * (999 - 1 + 1));
+  	let description = `Random description: ${randomNumber}`;
+  	let query = Product.update({ dateCreated: { $lt: currentDate }}, { status: 'Inactive' }, { multi: true });
+
+  	query.exec((err, product) => {
+      	if(err){
+      		callback(err, null);
+      	} else {
+      		callback(null);
+      	}
+  	});
+};
+
 
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 // Create product function
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 let createProduct = (name) => {
 	product = new Product();
-
 	product.name = name;
 	product.status = 'Active';
 	product.description = `Sample description for product: ${name}`;
@@ -83,20 +102,3 @@ let createProduct = (name) => {
 	});
 };
 
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-// Update product function
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-let updateProduct = (name) => {
-	let randomNumber = Math.floor(Math.random() * (999 - 1 + 1));
-	let query = Product.findOne({name: name}).select({ 'name': 1 });
-	query.exec((err, product) => {
-		if(err) throw err;
-		if(product){
-			product.description = `Random description generate every 10 seconds: ${randomNumber}`;
-			product.save(err =>{
-				if(err) throw err;
-				console.log(`Successfully updated random description for: ${product.name}\n ${product.description}\n`);	
-			});
-		}
-	});
-};
